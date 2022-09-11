@@ -39,7 +39,7 @@
   become: true
   vars:
     BASTION_HOST: "{{ hostvars['localhost']['BASTION_HOST'][0] }}"
-    POSTGRES_INFO: "{{ lookup('amazon.aws.aws_secret', 'PgSQLSecret-jx92GxHf3nlK') }}"
+    POSTGRES_INFO: "{{ lookup('amazon.aws.aws_secret', 'PgSQLSecret-jx92GxHf3nlK', region='us-east-1') }}"
   environment:
     POSTGRES_USERNAME: "{{ lookup('env','POSTGRES_USERNAME') }}"
     POSTGRES_PASSWORD: "{{ POSTGRES_INFO.password }}"
