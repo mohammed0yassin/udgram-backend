@@ -42,7 +42,7 @@
     AWS_REGION: "{{ lookup('env','AWS_REGION') }}"
     POSTGRES_INFO: "{{ lookup('amazon.aws.aws_secret', 'PgSQLSecret-jx92GxHf3nlK', region='{{ AWS_REGION }}') }}"
   environment:
-    POSTGRES_USERNAME: "{{ POSTGRES_INFO.username) }}"
+    POSTGRES_USERNAME: "{{ POSTGRES_INFO.username }}"
     POSTGRES_PASSWORD: "{{ POSTGRES_INFO.password }}"
     # POSTGRES_USERNAME: "{{ lookup('env','POSTGRES_USERNAME') }}"
     # POSTGRES_PASSWORD: "{{ lookup('env','POSTGRES_PASSWORD') }}"
