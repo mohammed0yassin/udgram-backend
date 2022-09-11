@@ -27,7 +27,7 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - "0c:8f:74:48:c1:37:1f:14:f4:f3:58:8d:7d:17:33:41"
-            - "	6c:c8:3f:76:1f:58:9d:ea:fd:6c:32:38:61:e2:e9:86"
+            - "6c:c8:3f:76:1f:58:9d:ea:fd:6c:32:38:61:e2:e9:86"
       - run:
           name: Install Ansible
           command: |
@@ -38,20 +38,14 @@ jobs:
       - run:
           name: Deploy App
           command: |
-            ansible-playbook runapp-playbook.yml
+            ./ansible/ansible-playbook runapp-playbook.yml
               
 workflows:
   udagram:
     jobs:
       - build
-      - hold:
-          filters:
-            branches:
-              only:
-                - master
-          type: approval
+      - deploy:
+          context:
+            - Udgram
           requires:
             - build
-      - deploy:
-          requires:
-            - hold
