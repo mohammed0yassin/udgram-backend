@@ -41,6 +41,7 @@ jobs:
           command: |
             cd .ansible/
             ansible-playbook runapp-playbook.yml
+    parallelism: 4
               
 workflows:
   udagram:
