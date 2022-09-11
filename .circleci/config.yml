@@ -23,6 +23,8 @@ jobs:
       - image: "cimg/python:3.8.13"
 
     steps:
+      - node/install:
+          node-version: '14.15' 
       - aws-cli/setup
       - checkout
       - add_ssh_keys:
