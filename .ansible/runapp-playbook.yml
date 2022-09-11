@@ -32,7 +32,6 @@
     BASTION_HOST: "{{ lookup('env','BASTION_HOST') }}"
     # POSTGRES_INFO: "{{ lookup('amazon.aws.aws_secret', 'PgSQLSecret-kZP2N8Pvtd0a') }}"
   environment:
-    ANSIBLE_HOST_KEY_CHECKING: False
     POSTGRES_USERNAME: "{{ lookup('env','POSTGRES_USERNAME') }}"
     POSTGRES_PASSWORD: "{{ lookup('env','POSTGRES_PASSWORD') }}"
     POSTGRES_HOST: "{{ lookup('env','POSTGRES_HOST') }}"
