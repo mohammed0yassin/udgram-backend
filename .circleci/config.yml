@@ -41,7 +41,7 @@ jobs:
           name: Deploy App
           command: |
             cd .ansible/
-            ansible-playbook runapp-playbook.yml
+            ansible-playbook runapp-playbook.yml -vvv
               
 workflows:
   udagram:
