@@ -4,10 +4,7 @@
   gather_facts: false
   become: false
 
-
   tasks:
-
-      
   - name: Find a group with matching name/prefix
     ec2_asg_info:
     name: WebServer
@@ -20,29 +17,32 @@
     with_items: "{{ asg_ec2_instance_ids.results[0].instances|map(attribute='instance_id')|list }}"
     register: ec2s
   # - debug: var=ec2s.results|map(attribute='instances')|sum(start=[])|map(attribute='network_interfaces')|sum(start=[])|map(attribute='private_dns_name')|list
-
+  
   - name: Group Hosts
     add_host: hostname={{ item }} groups=backendservers
     with_items: "{{ ec2s.results|map(attribute='instances')|sum(start=[])|map(attribute='network_interfaces')|sum(start=[])|map(attribute='private_dns_name')|list }}"
+
 
 - name: playbook deploy the node backend
   hosts: backendservers
   gather_facts: false
   become: true
+  vars:
+    BASTION_HOST: "{{ lookup('env','BASTION_HOST') }}"
   environment:
-    POSTGRES_USERNAME: "{{ POSTGRES_USERNAME }}"
-    POSTGRES_PASSWORD: "{{ POSTGRES_PASSWORD }}"
-    POSTGRES_HOST: "{{ POSTGRES_HOST }}" 
-    POSTGRES_DB: "{{ POSTGRES_DB }}"
-    PORT: "{{ PORT }}"
-    JWT_SECRET: "{{ JWT_SECRET }}"
-
+    POSTGRES_USERNAME: "{{ lookup('env','POSTGRES_USERNAME') }}"
+    POSTGRES_PASSWORD: "{{ lookup('env','POSTGRES_PASSWORD') }}"
+    POSTGRES_HOST: "{{ lookup('env','POSTGRES_HOST') }}"
+    POSTGRES_DB: "{{ lookup('env','POSTGRES_DB') }}"
+    PORT: "{{ lookup('env','PORT') }}"
+    JWT_SECRET: "{{ lookup('env','JWT_SECRET') }}"
+  
   tasks:
   - set_fact:
-      ansible_ssh_common_args: -o ProxyCommand="ssh -q ubuntu@ec2-50-19-135-207.compute-1.amazonaws.com -W %h:%p"
+      ansible_ssh_common_args: -o ProxyCommand="ssh -q ubuntu@{{ BASTION_HOST }} -W %h:%p"
       ansible_user: ubuntu
       
-  - name: Stop current running server
+  - name: Stop current running backend server
     shell:
       cmd: killall node
     ignore_errors: yes
@@ -71,3 +71,10 @@
     shell:
       cmd: npm run start &
       chdir: /var/app/current/
+
+  - name: Confirm backend server is running
+    shell: 
+      cmd: ps -ef | grep -v grep | grep node
+    register: npm_output
+    failed_when: "'node' not in npm_output.stdout"
+# - debug: var=npm_output.stdout
