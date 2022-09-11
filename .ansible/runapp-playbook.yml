@@ -40,6 +40,10 @@
     JWT_SECRET: "{{ lookup('env','JWT_SECRET') }}"
   
   tasks:
+  - name: Write the new ec2 instances host key to known hosts
+    connection: local
+    shell: "ssh-keyscan -H {{ BASTION_HOST  }} >> ~/.ssh/known_hosts"
+
   - set_fact:
       ansible_ssh_common_args: -o ProxyCommand="ssh -q ubuntu@{{ BASTION_HOST }} -W %h:%p"
       ansible_user: ubuntu
