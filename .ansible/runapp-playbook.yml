@@ -70,7 +70,7 @@
 
   - name: Copy Build Zip File
     copy:
-      src: ./Archive.zip
+      src: ../Archive.zip
       dest: /var/app/current
   
   - name: Unzip Build File

@@ -40,8 +40,9 @@ jobs:
       - run:
           name: Deploy App
           command: |
+            npm run build
             cd .ansible/
-            ansible-playbook runapp-playbook.yml -vvv
+            ansible-playbook runapp-playbook.yml
               
 workflows:
   udagram:
