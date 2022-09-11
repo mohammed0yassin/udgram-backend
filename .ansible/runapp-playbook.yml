@@ -42,8 +42,8 @@
     POSTGRES_INFO: "{{ lookup('amazon.aws.aws_secret', 'PgSQLSecret-jx92GxHf3nlK') }}"
   environment:
     POSTGRES_USERNAME: "{{ lookup('env','POSTGRES_USERNAME') }}"
-    # POSTGRES_PASSWORD: "{{ POSTGRES_INFO.password }}"
-    POSTGRES_PASSWORD: "{{ lookup('env','POSTGRES_PASSWORD') }}"
+    POSTGRES_PASSWORD: "{{ POSTGRES_INFO.password }}"
+    # POSTGRES_PASSWORD: "{{ lookup('env','POSTGRES_PASSWORD') }}"
     POSTGRES_HOST: "{{ lookup('env','POSTGRES_HOST') }}"
     POSTGRES_DB: "{{ lookup('env','POSTGRES_DB') }}"
     PORT: "{{ lookup('env','PORT') }}"
