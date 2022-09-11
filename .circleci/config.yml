@@ -33,9 +33,9 @@ jobs:
           command: |
               sudo apt update
               sudo apt install ansible
+              pip install ansible
+              pip install boto3
               ansible-galaxy collection install community.aws
-              # pip install ansible
-              # pip install boto3
       - run:
           name: Deploy App
           command: |
