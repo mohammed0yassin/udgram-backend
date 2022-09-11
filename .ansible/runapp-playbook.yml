@@ -38,8 +38,8 @@
   gather_facts: false
   become: true
   vars:
-    BASTION_HOST: "{{ BASTION_HOST }}"
-    BASTION_HOST: "{{ lookup('env','BASTION_HOST') }}"
+    BASTION_HOST: "{{ hostvars['localhost']['BASTION_HOST'][0] }}"
+    # BASTION_HOST: "{{ lookup('env','BASTION_HOST') }}"
     # POSTGRES_INFO: "{{ lookup('amazon.aws.aws_secret', 'PgSQLSecret-kZP2N8Pvtd0a') }}"
   environment:
     POSTGRES_USERNAME: "{{ lookup('env','POSTGRES_USERNAME') }}"
