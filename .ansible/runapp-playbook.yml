@@ -5,20 +5,21 @@
   become: false
 
   tasks:
-  - name: Find a group with matching name/prefix
+
+  - name: Get the auto scaling group instances
     ec2_asg_info:
     name: WebServer
     register: asg_ec2_instance_ids
   # - debug: var=asg_ec2_instance_ids.results[0].instances|map(attribute='instance_id')|list
 
-  - name: Group Hosts
+  - name: Get EC2 Instances Info
     ec2_instance_info:
       instance_ids: '{{ item }}'
     with_items: "{{ asg_ec2_instance_ids.results[0].instances|map(attribute='instance_id')|list }}"
     register: ec2s
   # - debug: var=ec2s.results|map(attribute='instances')|sum(start=[])|map(attribute='network_interfaces')|sum(start=[])|map(attribute='private_dns_name')|list
   
-  - name: Group Hosts
+  - name: Group Hosts with EC2 private dns names
     add_host: hostname={{ item }} groups=backendservers
     with_items: "{{ ec2s.results|map(attribute='instances')|sum(start=[])|map(attribute='network_interfaces')|sum(start=[])|map(attribute='private_dns_name')|list }}"
 
@@ -29,9 +30,10 @@
   become: true
   vars:
     BASTION_HOST: "{{ lookup('env','BASTION_HOST') }}"
+    POSTGRES_INFO: "{{ lookup('amazon.aws.aws_secret', 'PgSQLSecret-kZP2N8Pvtd0a') }}"
   environment:
-    POSTGRES_USERNAME: "{{ lookup('env','POSTGRES_USERNAME') }}"
-    POSTGRES_PASSWORD: "{{ lookup('env','POSTGRES_PASSWORD') }}"
+    POSTGRES_USERNAME: "{{ POSTGRES_INFO.username }}"
+    POSTGRES_PASSWORD: "{{ POSTGRES_INFO.password }}"
     POSTGRES_HOST: "{{ lookup('env','POSTGRES_HOST') }}"
     POSTGRES_DB: "{{ lookup('env','POSTGRES_DB') }}"
     PORT: "{{ lookup('env','PORT') }}"
@@ -54,7 +56,7 @@
 
   - name: Copy Build Zip File
     copy:
-      src: ./Archive.zip
+      src: ../Archive.zip
       dest: /var/app/current
   
   - name: Unzip Build File
