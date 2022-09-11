@@ -30,10 +30,10 @@
   become: true
   vars:
     BASTION_HOST: "{{ lookup('env','BASTION_HOST') }}"
-    POSTGRES_INFO: "{{ lookup('amazon.aws.aws_secret', 'PgSQLSecret-kZP2N8Pvtd0a') }}"
+    # POSTGRES_INFO: "{{ lookup('amazon.aws.aws_secret', 'PgSQLSecret-kZP2N8Pvtd0a') }}"
   environment:
-    POSTGRES_USERNAME: "{{ POSTGRES_INFO.username }}"
-    POSTGRES_PASSWORD: "{{ POSTGRES_INFO.password }}"
+    POSTGRES_USERNAME: "{{ POSTGRES_USERNAME }}"
+    POSTGRES_PASSWORD: "{{ POSTGRES_PASSWORD }}"
     POSTGRES_HOST: "{{ lookup('env','POSTGRES_HOST') }}"
     POSTGRES_DB: "{{ lookup('env','POSTGRES_DB') }}"
     PORT: "{{ lookup('env','PORT') }}"
