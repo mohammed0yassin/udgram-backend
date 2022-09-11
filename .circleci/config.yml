@@ -45,6 +45,11 @@ jobs:
             npm run build
             cd .ansible/
             ansible-playbook runapp-playbook.yml
+      - run:
+          name: Backup to S3
+          command: |
+            cd .ansible/
+            aws s3 cp Archive.zip s3://$FRONTEND_BUCKET_NAME
               
 workflows:
   udagram:
