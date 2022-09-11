@@ -21,8 +21,7 @@ jobs:
   deploy:
     docker:
       - image: "cimg/python:3.8.13"
-        environment:
-          ANSIBLE_HOST_KEY_CHECKING: False
+
     steps:
       - aws-cli/setup
       - checkout
