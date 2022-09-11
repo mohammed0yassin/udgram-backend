@@ -51,7 +51,7 @@ jobs:
             aws s3 cp Archive.zip s3://$FRONTEND_BUCKET_NAME
               
 workflows:
-  udagram:
+  udagram-backend:
     jobs:
       - build
       - deploy:
