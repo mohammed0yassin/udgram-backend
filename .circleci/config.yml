@@ -1,0 +1,51 @@
+version: 2.1
+orbs:
+  node: circleci/node@5.0.2
+  aws-cli: circleci/aws-cli@3.1.1
+jobs:
+  build:
+    docker:
+      - image: "cimg/node:14.15"
+    steps:
+      - node/install:
+          node-version: '14.15'         
+      - checkout
+      - run:
+          name: Install API Dependencies
+          command: |
+           npm run install .
+      - run:
+          name: API Build
+          command: |
+            npm run build
+  deploy:
+    docker:
+      - image: "cimg/python:3.8.13"
+    steps:
+      - aws-cli/setup
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "0c:8f:74:48:c1:37:1f:14:f4:f3:58:8d:7d:17:33:41"
+            - "6c:c8:3f:76:1f:58:9d:ea:fd:6c:32:38:61:e2:e9:86"
+      - run:
+          name: Install Ansible
+          command: |
+              sudo apt update
+              sudo apt install ansible
+              ansible-galaxy collection install community.aws
+              pip install boto3
+      - run:
+          name: Deploy App
+          command: |
+            ./ansible/ansible-playbook runapp-playbook.yml
+              
+workflows:
+  udagram:
+    jobs:
+      - build
+      - deploy:
+          context:
+            - Udgram
+          requires:
+            - build
