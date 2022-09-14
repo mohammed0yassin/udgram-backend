@@ -24,8 +24,9 @@ while len(all_good) == YES:
     sleep(10)
     sleep_cntr+=1
     if sleep_cntr >= 10:
-        print("Took too long to be Healty")
+        print("FAILED: Took too long to be Healty")
         exit(1)
 
+print("SUCCESS: All instances are Healthy")
 exit(0)
     

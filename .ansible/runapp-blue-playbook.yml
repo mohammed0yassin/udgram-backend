@@ -97,7 +97,6 @@
     register: npm_status
   - debug: var=npm_status.stdout
     
-
   - name: Confirm backend server is running
     shell: 
       cmd: ps -ef | grep -v grep | grep node
