@@ -43,5 +43,6 @@ Hold()
 ############################################################
 # Process the input options.                               #
 ############################################################
-runCloudformation create-stack udgram-blue-asg "asg"
-Hold udgram-blue-asg "Servers"
+STACK_NAME=udgram-asg-$RANDOM
+runCloudformation create-stack $STACK_NAME "asg"
+Hold $STACK_NAME "Servers"
