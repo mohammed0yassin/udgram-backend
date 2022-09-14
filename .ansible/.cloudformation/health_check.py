@@ -24,7 +24,7 @@ while len(all_good) != NO:
     log.info("Some instances are still Unhealthy...")
     sleep(10)
     sleep_cntr+=1
-    if sleep_cntr >= 10:
+    if sleep_cntr >= 30:
         print("FAILED: Took too long to be Healty")
         exit(1)
 
