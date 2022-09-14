@@ -58,12 +58,13 @@
   tasks:
   - name: Write the new ec2 instances host key to known hosts
     connection: local
-    shell: "ssh-keyscan -H {{ BASTION_HOST  }} >> ~/.ssh/known_hosts"
+    shell: "ssh-keyscan -H {{ BASTION_HOST }} >> ~/.ssh/known_hosts"
     become: false
 
   - set_fact:
       ansible_ssh_common_args: -o ProxyCommand="ssh -q ubuntu@{{ BASTION_HOST }} -W %h:%p"
       ansible_user: ubuntu
+      host_key_checking: "False"
       
   - name: Stop current running backend server
     shell:
@@ -94,11 +95,9 @@
     shell:
       cmd: npm run start
       chdir: /var/app/current/
-    register: npm_status
-  - debug: var=npm_status.stdout
     
-  - name: Confirm backend server is running
-    shell: 
-      cmd: ps -ef | grep -v grep | grep node
-    register: npm_output
-    failed_when: "'node' not in npm_output.stdout"
+  # - name: Confirm backend server is running
+  #   shell: 
+  #     cmd: ps -ef | grep -v grep | grep node
+  #   register: npm_output
+  #   failed_when: "'node' not in npm_output.stdout"
