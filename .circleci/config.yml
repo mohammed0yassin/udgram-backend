@@ -53,7 +53,7 @@ jobs:
           command: |
             npm run build
             cd .ansible/
-            ansible-playbook runapp-blue-playbook.yml
+            ansible-playbook runapp-blue-playbook.yml -vv
       - run:
           name: Wait till all Blue Instaces are Healthy
           command: |
