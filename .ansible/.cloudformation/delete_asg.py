@@ -1,7 +1,7 @@
-import boto3
+import boto3, os
 from time import sleep
 
-client = boto3.client('autoscaling')
+client = boto3.client('autoscaling', region_name=os.getenv('AWS_REGION'))
 
 responses = client.describe_auto_scaling_groups()
 for response in responses['AutoScalingGroups']:

@@ -1,20 +1,18 @@
-import boto3
+import boto3, os
 from time import sleep
 
-client = boto3.client('autoscaling')
+client = boto3.client('autoscaling', region_name=os.getenv('AWS_REGION'))
 HEALTHY = 'Healthy'
-all_good = []
-YES = 0
+all_good = ['Unhealthy']
+NO = 0
 sleep_cntr = 0
-while len(all_good) == YES:
+while len(all_good) != NO:
     responses = client.describe_auto_scaling_groups()
     for response in responses['AutoScalingGroups']:
         for tag in response['Tags']:
             if tag['Value'] == 'Blue':
                 blue_asg = response
-    
     instances = blue_asg['Instances']
-    print(instances)
     all_good = []
     for instance in instances:
         if instance['HealthStatus'] != HEALTHY:
