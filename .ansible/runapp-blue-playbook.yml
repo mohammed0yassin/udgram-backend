@@ -91,7 +91,7 @@
       cmd: npm install
       chdir: /var/app/current/
 
-  - name: Start the server
+  - name: Start the server &
     shell:
       cmd: npm run start
       chdir: /var/app/current/
