@@ -81,7 +81,7 @@ jobs:
       - run:
           name: Make the Blue as the new Green
           command: |
-              cd .ansible/
+              cd .ansible/.cloudformation
               sed -i "s,Blue,Green,g" asg-parameters.json
               sh ./create.sh
 
