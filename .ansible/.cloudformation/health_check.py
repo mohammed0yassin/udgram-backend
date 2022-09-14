@@ -2,7 +2,8 @@ import boto3, os
 from time import sleep
 import logging
 
-log = logging.getLogger().setLevel(logging.ERROR)
+log = logging.getLogger()
+log.setLevel(logging.ERROR)
 client = boto3.client('autoscaling', region_name=os.getenv('AWS_REGION'))
 HEALTHY = 'Healthy'
 all_good = ['Unhealthy']
