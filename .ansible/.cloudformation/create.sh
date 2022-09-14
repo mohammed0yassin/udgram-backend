@@ -43,7 +43,7 @@ Hold()
 ############################################################
 # Process the input options.                               #
 ############################################################
->&1 source blue_stack_name.txt
+source blue_stack_name.txt 2>/dev/null
 if [ $BLUE_STACK_NAME ]; then
     runCloudformation update-stack $BLUE_STACK_NAME "asg"
     Hold $BLUE_STACK_NAME "Servers"
