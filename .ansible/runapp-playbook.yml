@@ -13,7 +13,7 @@
   - set_fact:
       asg_blue_id: "{{ all_asgs.results|map(attribute='tags')|sum(start=[])|selectattr('value', 'equalto', 'Blue')|json_query('[].resource_id') | list }}"
   - set_fact:
-      ec2_instaces_blue: "{{ all_asgs.results|selectattr('auto_scaling_group_name', 'equalto', asg_blue_id[0])|map(attribute='instances')|json_query('[][].instance_id') }}"
+      ec2_instaces_blue: "{{ all_asgs.results|selectattr('auto_scaling_group_name', 'equalto', asg_blue_id[0])|map(attribute='instances')|sum(start=[])|selectattr('health_status', 'equalto', 'Healthy')|json_query('[].instance_id') }}"
 
   - name: Get BLUE EC2 Instances Info
     ec2_instance_info:
