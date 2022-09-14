@@ -1,6 +1,8 @@
 import boto3, os
 from time import sleep
+import logging
 
+log = logging.getLogger().setLevel(logging.ERROR)
 client = boto3.client('autoscaling', region_name=os.getenv('AWS_REGION'))
 HEALTHY = 'Healthy'
 all_good = ['Unhealthy']
@@ -19,6 +21,7 @@ while len(all_good) != NO:
             all_good.append("Unhealthy")
 
     print("Some instances are still Unhealthy...")
+    log.info("Some instances are still Unhealthy...")
     sleep(10)
     sleep_cntr+=1
     if sleep_cntr >= 10:
