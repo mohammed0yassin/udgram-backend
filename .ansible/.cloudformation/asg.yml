@@ -1,0 +1,34 @@
+Description: >  
+    Mohammed Yassin / Udgram Full Stack App / Servers
+
+Parameters:
+
+    EnvironmentName:
+        Description: An environment name that will be prefixed to resource names
+        Type: String
+
+    DeploymentColor:
+        Description: The Deployment color (Blue or Green)
+        Type: String
+
+
+Resources:
+
+    WebServerAutoScalingGroup:
+        Type: AWS::AutoScaling::AutoScalingGroup
+        Properties:
+            VPCZoneIdentifier:
+                - Fn::ImportValue:
+                    !Sub "${EnvironmentName}-PrivateSubnets"
+            LaunchConfigurationName:
+                Fn::ImportValue: !Sub ${EnvironmentName}-WebServerLaunchConfig
+            MinSize: '2'
+            MaxSize: '4'
+            HealthCheckType: ELB
+            TargetGroupARNs:
+                - Fn::ImportValue: !Sub ${EnvironmentName}-WebServerTargetGroup
+            Tags:
+                - Key: Deployment
+                  Value: !Ref DeploymentColor
+                  PropagateAtLaunch: true
+

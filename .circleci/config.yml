@@ -18,10 +18,13 @@ jobs:
           name: API Build
           command: |
             npm run build
-  deploy:
+      - run:
+          name: Backup to S3
+          command: |
+            aws s3 cp Archive.zip s3://$FRONTEND_BUCKET_NAME
+  blue-deployment:
     docker:
       - image: "cimg/python:3.8.13"
-
     steps:
       - node/install:
           node-version: '14.15' 
@@ -32,6 +35,11 @@ jobs:
             - "0c:8f:74:48:c1:37:1f:14:f4:f3:58:8d:7d:17:33:41"
             - "6c:c8:3f:76:1f:58:9d:ea:fd:6c:32:38:61:e2:e9:86"
       - run:
+          name: Create Blue Auto Scaling Group
+          command: |
+              cd .ansible/.cloudformation
+              sh ./create.sh
+      - run:
           name: Install Ansible
           command: |
               sudo apt update
@@ -40,20 +48,56 @@ jobs:
               pip install boto3
               ansible-galaxy collection install community.aws
       - run:
-          name: Deploy App
+          name: Deploy Blue App
           command: |
             npm run build
             cd .ansible/
-            ansible-playbook runapp-playbook.yml
+            ansible-playbook runapp-blue-playbook.yml
       - run:
-          name: Backup to S3
+          name: Wait till all Blue Instaces are Healthy
           command: |
-            aws s3 cp Archive.zip s3://$FRONTEND_BUCKET_NAME
-              
+            cd .ansible/.cloudformation/
+            python3 health_check.py
+  green-deployment:
+    docker:
+      - image: "cimg/python:3.8.13"
+    steps:
+      - node/install:
+          node-version: '14.15' 
+      - aws-cli/setup
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "0c:8f:74:48:c1:37:1f:14:f4:f3:58:8d:7d:17:33:41"
+            - "6c:c8:3f:76:1f:58:9d:ea:fd:6c:32:38:61:e2:e9:86"
+      - run:
+          name: Delete Green Auto Scaling Group
+          command: |
+              cd .ansible/.cloudformation
+              python3 delete_asg.py
+      - run:
+          name: Make the Blue as the new Green
+          command: |
+              cd .ansible/
+              sed -i "s,Blue,Green,g" asg-parameters.json
+              sh ./create.sh
+
 workflows:
   udagram-backend:
     jobs:
-      - build
+      - build:
+          context:
+            - Udgram
+      - blue-deployment:
+          context:
+            - Udgram   
+          requires:
+            - build
+      - green-deployment:
+          context:
+            - Udgram   
+          requires:
+            - blue-deployment
       - deploy:
           context:
             - Udgram
