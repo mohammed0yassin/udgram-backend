@@ -98,8 +98,4 @@ workflows:
             - Udgram   
           requires:
             - blue-deployment
-      - deploy:
-          context:
-            - Udgram
-          requires:
-            - build
+
