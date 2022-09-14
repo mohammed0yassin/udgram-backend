@@ -6,22 +6,28 @@
 
   tasks:
 
-  - name: Get the auto scaling group instances
+  - name: Get the BLUE auto scaling group instances
     ec2_asg_info:
     name: WebServer
-    register: asg_ec2_instance_ids
-  # - debug: var=asg_ec2_instance_ids.results[0].instances|map(attribute='instance_id')|list
+    register: all_asgs
+  - set_fact:
+      asg_blue_id: "{{ all_asgs.results|map(attribute='tags')|sum(start=[])|selectattr('value', 'equalto', 'Blue')|json_query('[].resource_id') | list }}"
+  - set_fact:
+      ec2_instaces_blue: "{{ all_asgs.results|selectattr('auto_scaling_group_name', 'equalto', asg_blue_id[0])|map(attribute='instances')|json_query('[][].instance_id') }}"
 
-  - name: Get EC2 Instances Info
+  - name: Get BLUE EC2 Instances Info
     ec2_instance_info:
       instance_ids: '{{ item }}'
-    with_items: "{{ asg_ec2_instance_ids.results[0].instances|map(attribute='instance_id')|list }}"
+    with_items: "{{ ec2_instaces_blue }}"
     register: ec2s
-  # - debug: var=ec2s.results|map(attribute='instances')|sum(start=[])|map(attribute='network_interfaces')|sum(start=[])|map(attribute='private_dns_name')|list
+  - set_fact:
+      private_dns_names: "{{ec2s.results|map(attribute='instances')|json_query('[][].network_interfaces')|json_query('[][].private_dns_name')|list }}"
+  # - debug:
+      # msg: "{{ private_dns_names }}"
   
-  - name: Group Hosts with EC2 private dns names
+  - name: Group BLUE Hosts with EC2 private dns names
     add_host: hostname={{ item }} groups=backendservers
-    with_items: "{{ ec2s.results|map(attribute='instances')|sum(start=[])|map(attribute='network_interfaces')|sum(start=[])|map(attribute='private_dns_name')|list }}"
+    with_items: "{{ private_dns_names }}"
 
   - name: Get BASTION_HOST
     ec2_instance_info:
@@ -88,10 +94,12 @@
     shell:
       cmd: npm run start &
       chdir: /var/app/current/
+    register: npm_status
+  - debug: var=npm_status.stdout
+    
 
   - name: Confirm backend server is running
     shell: 
       cmd: ps -ef | grep -v grep | grep node
     register: npm_output
     failed_when: "'node' not in npm_output.stdout"
-# - debug: var=npm_output.stdout
