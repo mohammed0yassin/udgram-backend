@@ -92,7 +92,7 @@
 
   - name: Start the server
     shell:
-      cmd: npm run start &
+      cmd: npm run start
       chdir: /var/app/current/
     register: npm_status
   - debug: var=npm_status.stdout
