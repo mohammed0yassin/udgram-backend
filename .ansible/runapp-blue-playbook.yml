@@ -64,7 +64,6 @@
   - set_fact:
       ansible_ssh_common_args: -o ProxyCommand="ssh -q ubuntu@{{ BASTION_HOST }} -W %h:%p"
       ansible_user: ubuntu
-      host_key_checking: "False"
       
   - name: Stop current running backend server
     shell:

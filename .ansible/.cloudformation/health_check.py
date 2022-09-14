@@ -21,14 +21,13 @@ while len(all_good) != NO:
         if instance['HealthStatus'] != HEALTHY:
             all_good.append("Unhealthy")
 
-    print("Some instances are still Unhealthy...")
     log.info("Some instances are still Unhealthy...")
     sleep(10)
     sleep_cntr+=1
     if sleep_cntr >= 30:
-        print("FAILED: Took too long to be Healty")
+        log.error("FAILED: Took too long to be Healty")
         exit(1)
 
-print("SUCCESS: All instances are Healthy")
+log.info("SUCCESS: All instances are Healthy")
 exit(0)
     
