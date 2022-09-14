@@ -39,7 +39,7 @@ jobs:
           name: Create Blue Auto Scaling Group
           command: |
               cd .ansible/.cloudformation
-              sh ./create.sh
+              source ./create.sh
       - run:
           name: Install Ansible
           command: |
@@ -83,7 +83,7 @@ jobs:
           command: |
               cd .ansible/.cloudformation
               sed -i "s,Blue,Green,g" asg-parameters.json
-              sh ./create.sh
+              source ./create.sh
 
 workflows:
   udagram-backend:

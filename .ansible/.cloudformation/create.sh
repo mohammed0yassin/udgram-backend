@@ -4,7 +4,7 @@
 # Cloudformation Management                                #
 ############################################################
 runCloudformation()
-{
+{   
     state=$(aws cloudformation $1 --stack-name $2 --template-body file://$3.yml  --parameters file://$3-parameters.json --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM" --region=$AWS_REGION 2>&1)
     already_exists=$(echo "$state" | grep -F AlreadyExistsException)
     no_new_updates=""
@@ -43,6 +43,14 @@ Hold()
 ############################################################
 # Process the input options.                               #
 ############################################################
-STACK_NAME=udgram-asg-$RANDOM
-runCloudformation create-stack $STACK_NAME "asg"
-Hold $STACK_NAME "Servers"
+source blue_stack_name.txt
+if [ $BLUE_STACK_NAME ]; then
+    runCloudformation update-stack $BLUE_STACK_NAME "asg"
+    Hold $BLUE_STACK_NAME "Servers"
+    rm -rf blue_stack_name.txt
+else
+    BLUE_STACK_NAME=udgram-asg-$RANDOM
+    echo "BLUE_STACK_NAME=$BLUE_STACK_NAME" > blue_stack_name.txt
+    runCloudformation create-stack $BLUE_STACK_NAME "asg"
+    Hold $BLUE_STACK_NAME "Servers"
+fi
