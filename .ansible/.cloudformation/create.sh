@@ -44,14 +44,17 @@ Hold()
 # Process the input options.                               #
 ############################################################
 set +e
+aws s3 cp s3://$FRONTEND_BUCKET_NAME/blue_stack_name.txt .
 source blue_stack_name.txt
 if [ $BLUE_STACK_NAME ]; then
     runCloudformation update-stack $BLUE_STACK_NAME "asg"
     Hold $BLUE_STACK_NAME "Servers"
     rm -rf blue_stack_name.txt
+    aws s3 rm s3://$FRONTEND_BUCKET_NAME/blue_stack_name.txt
 else
     BLUE_STACK_NAME=udgram-asg-$RANDOM
     echo "BLUE_STACK_NAME=$BLUE_STACK_NAME" > blue_stack_name.txt
+    aws s3 cp blue_stack_name.txt s3://$FRONTEND_BUCKET_NAME
     runCloudformation create-stack $BLUE_STACK_NAME "asg"
     Hold $BLUE_STACK_NAME "Servers"
 fi
